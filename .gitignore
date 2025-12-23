@@ -1,0 +1,9 @@
+# OS Files
+.DS_Store
+.idea/
+
+# Deno Cache
+.deno/
+
+# Environment variables
+.env*
