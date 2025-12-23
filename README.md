@@ -97,7 +97,3 @@ Statistics object provided to the `onCycle` callback:
 - `lastExecutionTimeMs` (number): Last cycle execution time in milliseconds
 - `lastIntervalTimeMs` (number): Last interval time in milliseconds
 - `wkc?` (number): Working counter from last cycle (if cycleFn returns a number)
-
-## License
-
-MIT
