@@ -1,4 +1,4 @@
-# @controlx-io/cycle-loop
+# Cycle Loop
 
 A utility for running precise cyclic operations with busy-wait timing, providing sub-millisecond
 precision for cycle loops.
