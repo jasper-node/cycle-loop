@@ -38,6 +38,8 @@ export interface CycleLoopController {
   isRunning: () => boolean;
   /** Get current cycle statistics */
   getStats: () => CycleStats;
+  /** Reset cycle statistics */
+  resetStats: () => void;
 }
 
 /**
@@ -134,12 +136,23 @@ export function createCycleLoop(
     }
   };
 
+  const resetStats = () => {
+    cycleCount = 0;
+    totalExecutionTime = 0;
+    totalIntervalTime = 0;
+    lastExecutionTimeMs = 0;
+    lastIntervalTimeMs = 0;
+    previousCycleStart = null;
+    lastWkc = undefined;
+  };
+
   return {
     start: () => {
       if (running) {
         console.warn("Cycle loop is already running");
         return;
       }
+      resetStats();
       running = true;
       runCycleLoop();
     },
@@ -160,6 +173,7 @@ export function createCycleLoop(
         wkc: lastWkc,
       };
     },
+    resetStats,
   };
 }
 

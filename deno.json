@@ -1,6 +1,6 @@
 {
   "name": "@controlx-io/cycle-loop",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A utility for running precise cyclic operations with busy-wait timing, providing sub-millisecond precision for cycle loops.",
   "exports": {
     ".": "./src/mod.ts"

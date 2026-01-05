@@ -267,3 +267,74 @@ Deno.test({
     });
   },
 });
+
+Deno.test({
+  name: "createCycleLoop - resetStats clears all statistics",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const controller = createCycleLoop({
+      cycleTimeMs: 5,
+      cycleFn: () => Promise.resolve(42),
+    });
+
+    controller.start();
+    await delay(30);
+    controller.stop();
+    await delay(30);
+
+    // Verify stats were accumulated
+    const statsBeforeReset = controller.getStats();
+    assert(statsBeforeReset.cycleCount > 0);
+    assert(statsBeforeReset.avgExecutionTimeMs > 0);
+    assertEquals(statsBeforeReset.wkc, 42);
+
+    // Reset stats
+    controller.resetStats();
+
+    // Verify all stats are cleared
+    const statsAfterReset = controller.getStats();
+    assertEquals(statsAfterReset.cycleCount, 0);
+    assertEquals(statsAfterReset.avgExecutionTimeMs, 0);
+    assertEquals(statsAfterReset.avgIntervalTimeMs, 0);
+    assertEquals(statsAfterReset.lastExecutionTimeMs, 0);
+    assertEquals(statsAfterReset.lastIntervalTimeMs, 0);
+    assertEquals(statsAfterReset.wkc, undefined);
+  },
+});
+
+Deno.test({
+  name: "createCycleLoop - start resets stats automatically",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const controller = createCycleLoop({
+      cycleTimeMs: 5,
+      cycleFn: () => Promise.resolve(99),
+    });
+
+    // First run
+    controller.start();
+    await delay(30);
+    controller.stop();
+    await delay(30);
+
+    const statsAfterFirstRun = controller.getStats();
+    assert(statsAfterFirstRun.cycleCount > 0);
+    const firstRunCycleCount = statsAfterFirstRun.cycleCount;
+
+    // Second run - stats should be reset
+    controller.start();
+    await delay(20);
+    controller.stop();
+    await delay(30);
+
+    const statsAfterSecondRun = controller.getStats();
+    // Stats should be from fresh start, not accumulated from first run
+    assert(statsAfterSecondRun.cycleCount > 0);
+    assert(
+      statsAfterSecondRun.cycleCount < firstRunCycleCount + 10,
+      "Stats should have been reset on start, not accumulated",
+    );
+  },
+});
